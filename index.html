@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Alunos - Escola Hilda Araújo</title>
+    <style>
+        /* CSS */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        
+        .school-name {
+            font-style: italic;
+            font-size: 1.2em;
+            margin-top: 5px;
+        }
+        
+        .menu {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            background-color: #34495e;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .menu button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        
+        .menu button:hover {
+            background-color: #2980b9;
+        }
+        
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .form-container.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .form-actions {
+            text-align: right;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-left: 10px;
+        }
+        
+        .btn-primary {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .edit-btn {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .search-container {
+            margin-bottom: 20px;
+        }
+        
+        .search-container input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 200px;
+            margin: 10px;
+        }
+        
+        .stat-card h3 {
+            margin-top: 0;
+            color: #7f8c8d;
+        }
+        
+        .stat-card p {
+            font-size: 2em;
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+        
+        @media (max-width: 768px) {
+            .menu {
+                flex-direction: column;
+            }
+            
+            .menu button {
+                margin: 5px 0;
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Controle de Alunos</h1>
+            <div class="school-name">Escola Estadual Prof. Hilda Araújo</div>
+        </header>
+        
+        <div class="menu">
+            <button id="btn-add">Cadastrar Aluno</button>
+            <button id="btn-list">Listar Alunos</button>
+            <button id="btn-stats">Estatísticas</button>
+        </div>
+        
+        <div id="stats-container" class="form-container">
+            <h2>Estatísticas da Escola</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>Total de Alunos</h3>
+                    <p id="total-alunos">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Alunos por Série</h3>
+                    <p id="alunos-serie">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Média de Idade</h3>
+                    <p id="media-idade">0</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="add-container" class="form-container">
+            <h2>Cadastrar Novo Aluno</h2>
+            <form id="aluno-form">
+                <input type="hidden" id="aluno-id">
+                <div class="form-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="matricula">Número de Matrícula</label>
+                    <input type="text" id="matricula" required>
+                </div>
+                <div class="form-group">
+                    <label for="data-nascimento">Data de Nascimento</label>
+                    <input type="date" id="data-nascimento" required>
+                </div>
+                <div class="form-group">
+                    <label for="serie">Série/Turma</label>
+                    <select id="serie" required>
+                        <option value="">Selecione...</option>
+                        <option value="1º Ano">1º Ano</option>
+                        <option value="2º Ano">2º Ano</option>
+                        <option value="3º Ano">3º Ano</option>
+                        <option value="4º Ano">4º Ano</option>
+                        <option value="5º Ano">5º Ano</option>
+                        <option value="6º Ano">6º Ano</option>
+                        <option value="7º Ano">7º Ano</option>
+                        <option value="8º Ano">8º Ano</option>
+                        <option value="9º Ano">9º Ano</option>
+                        <option value="1º EM">1º Ensino Médio</option>
+                        <option value="2º EM">2º Ensino Médio</option>
+                        <option value="3º EM">3º Ensino Médio</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="turno">Turno</label>
+                    <select id="turno" required>
+                        <option value="">Selecione...</option>
+                        <option value="Manhã">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="responsavel">Responsável</label>
+                    <input type="text" id="responsavel" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone para Contato</label>
+                    <input type="tel" id="telefone" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="btn-cancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+        
+        <div id="list-container" class="form-container active">
+            <h2>Lista de Alunos</h2>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Pesquisar por nome, matrícula ou série...">
+            </div>
+            <table id="alunos-table">
+                <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Nome</th>
+                        <th>Série/Turma</th>
+                        <th>Turno</th>
+                        <th>Idade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="alunos-list">
+                    <!-- Alunos serão carregados aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript com IndexedDB
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos da interface
+            const btnAdd = document.getElementById('btn-add');
+            const btnList = document.getElementById('btn-list');
+            const btnStats = document.getElementById('btn-stats');
+            const btnCancel = document.getElementById('btn-cancel');
+            const alunoForm = document.getElementById('aluno-form');
+            const searchInput = document.getElementById('search-input');
+            
+            const addContainer = document.getElementById('add-container');
+            const listContainer = document.getElementById('list-container');
+            const statsContainer = document.getElementById('stats-container');
+            
+            // Banco de dados
+            let db;
+            const DB_NAME = 'EscolaHildaAraujoDB';
+            const DB_VERSION = 1;
+            const STORE_NAME = 'alunos';
+            
+            // Abrir ou criar o banco de dados
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            
+            request.onerror = function(event) {
+                console.error('Erro ao abrir o banco de dados:', event.target.error);
+            };
+            
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                console.log('Banco de dados aberto com sucesso');
+                carregarAlunos();
+                atualizarEstatisticas();
+            };
+            
+            request.onupgradeneeded = function(event) {
+                const db = event.target.result;
+                
+                // Criar object store (tabela) para alunos
+                const objectStore = db.createObjectStore(STORE_NAME, { 
+                    keyPath: 'id',
+                    autoIncrement: true 
+                });
+                
+                // Criar índices para busca
+                objectStore.createIndex('nome', 'nome', { unique: false });
+                objectStore.createIndex('matricula', 'matricula', { unique: true });
+                objectStore.createIndex('serie', 'serie', { unique: false });
+                objectStore.createIndex('turno', 'turno', { unique: false });
+                
+                console.log('Estrutura do banco de dados criada');
+            };
+            
+            // Função para adicionar um aluno
+            function adicionarAluno(aluno) {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                
+                const request = store.add(aluno);
+                
+                request.onsuccess = function() {
+                    console.log('Aluno adicionado com sucesso');
+                    carregarAlunos();
+                    atualizarEstatisticas();
+                    mostrarLista();
+                };
+                
+                request.onerror = function(event) {
+                    console.error('Erro ao adicionar aluno:', event.target.error);
+                    if (event.target.error.name === 'ConstraintError') {
+                        alert('Já existe um aluno com esta matrícula!');
+                    }
+                };
+            }
+            
+            // Função para atualizar um aluno
+            function atualizarAluno(aluno) {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                
+                const request = store.put(aluno);
+                
+                request.onsuccess = function() {
+                    console.log('Aluno atualizado com sucesso');
+                    carregarAlunos();
+                    atualizarEstatisticas();
+                    mostrarLista();
+                };
+                
+                request.onerror = function(event) {
+                    console.error('Erro ao atualizar aluno:', event.target.error);
+                };
+            }
+            
+            // Função para deletar um aluno
+            function deletarAluno(id) {
+                if (!confirm('Tem certeza que deseja excluir este aluno?')) {
+                    return;
+                }
+                
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                
+                const request = store.delete(id);
+                
+                request.onsuccess = function() {
+                    console.log('Aluno deletado com sucesso');
+                    carregarAlunos();
+                    atualizarEstatisticas();
+                };
+                
+                request.onerror = function(event) {
+                    console.error('Erro ao deletar aluno:', event.target.error);
+                };
+            }
+            
+            // Função para carregar todos os alunos
+            function carregarAlunos(filter = '') {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+                
+                request.onsuccess = function(event) {
+                    const alunos = event.target.result;
+                    const tbody = document.getElementById('alunos-list');
+                    tbody.innerHTML = '';
+                    
+                    // Filtrar alunos se houver um termo de busca
+                    const alunosFiltrados = alunos.filter(aluno => {
+                        if (!filter) return true;
+                        const searchTerm = filter.toLowerCase();
+                        return (
+                            aluno.nome.toLowerCase().includes(searchTerm) ||
+                            aluno.matricula.toLowerCase().includes(searchTerm) ||
+                            aluno.serie.toLowerCase().includes(searchTerm)
+                        );
+                    });
+                    
+                    if (alunosFiltrados.length === 0) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = '<td colspan="6" style="text-align: center;">Nenhum aluno encontrado</td>';
+                        tbody.appendChild(tr);
+                        return;
+                    }
+                    
+                    alunosFiltrados.forEach(aluno => {
+                        const tr = document.createElement('tr');
+                        
+                        // Calcular idade
+                        const dataNasc = new Date(aluno.dataNascimento);
+                        const hoje = new Date();
+                        let idade = hoje.getFullYear() - dataNasc.getFullYear();
+                        const mes = hoje.getMonth() - dataNasc.getMonth();
+                        if (mes < 0 || (mes === 0 && hoje.getDate() < dataNasc.getDate())) {
+                            idade--;
+                        }
+                        
+                        tr.innerHTML = `
+                            <td>${aluno.matricula}</td>
+                            <td>${aluno.nome}</td>
+                            <td>${aluno.serie}</td>
+                            <td>${aluno.turno}</td>
+                            <td>${idade} anos</td>
+                            <td class="actions">
+                                <button class="edit-btn" data-id="${aluno.id}">Editar</button>
+                                <button class="delete-btn" data-id="${aluno.id}">Excluir</button>
+                            </td>
+                        `;
+                        
+                        tbody.appendChild(tr);
+                    });
+                    
+                    // Adicionar eventos aos botões de edição e exclusão
+                    document.querySelectorAll('.edit-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            editarAluno(parseInt(this.getAttribute('data-id')));
+                        });
+                    });
+                    
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            deletarAluno(parseInt(this.getAttribute('data-id')));
+                        });
+                    });
+                };
+                
+                request.onerror = function(event) {
+                    console.error('Erro ao carregar alunos:', event.target.error);
+                };
+            }
+            
+            // Função para editar um aluno
+            function editarAluno(id) {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                
+                const request = store.get(id);
+                
+                request.onsuccess = function(event) {
+                    const aluno = event.target.result;
+                    if (aluno) {
+                        document.getElementById('aluno-id').value = aluno.id;
+                        document.getElementById('nome').value = aluno.nome;
+                        document.getElementById('matricula').value = aluno.matricula;
+                        document.getElementById('data-nascimento').value = aluno.dataNascimento;
+                        document.getElementById('serie').value = aluno.serie;
+                        document.getElementById('turno').value = aluno.turno;
+                        document.getElementById('responsavel').value = aluno.responsavel;
+                        document.getElementById('telefone').value = aluno.telefone;
+                        
+                        mostrarFormulario();
+                    }
+                };
+                
+                request.onerror = function(event) {
+                    console.error('Erro ao buscar aluno:', event.target.error);
+                };
+            }
+            
+            // Função para atualizar estatísticas
+            function atualizarEstatisticas() {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+                
+                request.onsuccess = function(event) {
+                    const alunos = event.target.result;
+                    const totalAlunos = alunos.length;
+                    
+                    // Calcular alunos por série
+                    const alunosPorSerie = {};
+                    alunos.forEach(aluno => {
+                        if (!alunosPorSerie[aluno.serie]) {
+                            alunosPorSerie[aluno.serie] = 0;
+                        }
+                        alunosPorSerie[aluno.serie]++;
+                    });
+                    
+                    // Formatando alunos por série para exibição
+                    let seriesHTML = '';
+                    for (const serie in alunosPorSerie) {
+                        seriesHTML += `<strong>${serie}:</strong> ${alunosPorSerie[serie]}<br>`;
+                    }
+                    
+                    // Calcular média de idade
+                    let totalIdade = 0;
+                    alunos.forEach(aluno => {
+                        const dataNasc = new Date(aluno.dataNascimento);
+                        const hoje = new Date();
+                        let idade = hoje.getFullYear() - dataNasc.getFullYear();
+                        const mes = hoje.getMonth() - dataNasc.getMonth();
+                        if (mes < 0 || (mes === 0 && hoje.getDate() < dataNasc.getDate())) {
+                            idade--;
+                        }
+                        totalIdade += idade;
+                    });
+                    
+                    const mediaIdade = totalAlunos > 0 ? (totalIdade / totalAlunos).toFixed(1) : 0;
+                    
+                    // Atualizar interface
+                    document.getElementById('total-alunos').textContent = totalAlunos;
+                    document.getElementById('alunos-serie').innerHTML = seriesHTML;
+                    document.getElementById('media-idade').textContent = mediaIdade;
+                };
+                
+                request.onerror = function(event) {
+                    console.error('Erro ao carregar estatísticas:', event.target.error);
+                };
+            }
+            
+            // Funções para mostrar diferentes seções
+            function mostrarFormulario() {
+                addContainer.classList.add('active');
+                listContainer.classList.remove('active');
+                statsContainer.classList.remove('active');
+            }
+            
+            function mostrarLista() {
+                addContainer.classList.remove('active');
+                listContainer.classList.add('active');
+                statsContainer.classList.remove('active');
+                // Resetar formulário
+                alunoForm.reset();
+                document.getElementById('aluno-id').value = '';
+            }
+            
+            function mostrarEstatisticas() {
+                addContainer.classList.remove('active');
+                listContainer.classList.remove('active');
+                statsContainer.classList.add('active');
+                atualizarEstatisticas();
+            }
+            
+            // Event Listeners
+            btnAdd.addEventListener('click', function() {
+                mostrarFormulario();
+            });
+            
+            btnList.addEventListener('click', function() {
+                mostrarLista();
+            });
+            
+            btnStats.addEventListener('click', function() {
+                mostrarEstatisticas();
+            });
+            
+            btnCancel.addEventListener('click', function() {
+                mostrarLista();
+            });
+            
+            alunoForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('aluno-id').value;
+                const aluno = {
+                    nome: document.getElementById('nome').value,
+                    matricula: document.getElementById('matricula').value,
+                    dataNascimento: document.getElementById('data-nascimento').value,
+                    serie: document.getElementById('serie').value,
+                    turno: document.getElementById('turno').value,
+                    responsavel: document.getElementById('responsavel').value,
+                    telefone: document.getElementById('telefone').value
+                };
+                
+                if (id) {
+                    aluno.id = parseInt(id);
+                    atualizarAluno(aluno);
+                } else {
+                    adicionarAluno(aluno);
+                }
+            });
+            
+            searchInput.addEventListener('input', function() {
+                carregarAlunos(this.value);
+            });
+            
+            // Inicializar mostrando a lista de alunos
+            mostrarLista();
+        });
+    </script>
+</body>
+</html>
